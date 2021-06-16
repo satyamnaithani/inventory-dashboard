@@ -8,21 +8,19 @@ const Stock = ({ data }) => {
     <div className={styles.container}>
         <Head><title>{`${company}-Stock`}</title></Head>
         <NavBar />
-        <div className={styles.flex}>
+        <div className='flex'>
             <Menu />
             <Table stock={data}/>
         </div>
-      
     </div>
   )
 }
 
 export async function getServerSideProps() {
-    // Fetch data from external API
+
     const res = await fetch(`https://nodejs-msql-backend.herokuapp.com/stock`)
-    const data = await res.json()
-  
-    // Pass data to the page via props
+    const data = await res.json();
+
     return { props: { data } }
 }
 
