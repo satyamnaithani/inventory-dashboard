@@ -18,7 +18,7 @@ const Stock = ({ data }) => {
 
 export async function getServerSideProps() {
 
-    const res = await fetch(`https://nodejs-msql-backend.herokuapp.com/stock`)
+    const res = await fetch(`https://nodejs-msql-backend.herokuapp.com/stock`);
     const data = await res.json();
 
     return { props: { data } }
