@@ -1,36 +1,36 @@
 import { Table } from 'react-bootstrap';
 
-const StockTable = () => {
+const StockTable = ({ stock }) => {
     return (
         <Table striped bordered hover>
             <thead>
                 <tr>
-                    <th>#</th>
-                    <th>First Name</th>
-                    <th>Last Name</th>
-                    <th>Username</th>
+                    <th>Item</th>
+                    <th>Purchase</th>
+                    <th>Lot</th>
+                    <th>Exp</th>
+                    <th>Rate</th>
+                    <th>Quantity</th>
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>1</td>
-                    <td>Mark</td>
-                    <td>Otto</td>
-                    <td>@mdo</td>
-                </tr>
-                <tr>
-                    <td>2</td>
-                    <td>Jacob</td>
-                    <td>Thornton</td>
-                    <td>@fat</td>
-                </tr>
-                <tr>
-                    <td>3</td>
-                    <td colSpan="2">Larry the Bird</td>
-                    <td>@twitter</td>
-                </tr>
+                {stock.map((item, index) => <StockRow key={index} item={item}/>)}
             </tbody>
         </Table>
+    );
+}
+
+const StockRow = ({item}) => {
+    const { item_id, purchase_id, lot_no, exp, quantity, initial_quantity, rate} = item;
+    return (
+        <tr>
+            <td>{item_id}</td>
+            <td>{purchase_id}</td>
+            <td>{lot_no}</td>
+            <td>{exp}</td>
+            <td>{rate}</td>
+            <td>{`${quantity}/${initial_quantity}`}</td>
+        </tr>
     );
 }
 
