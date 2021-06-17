@@ -1,7 +1,5 @@
 const handler = (req, res) => {
-  const res = await fetch(`https://nodejs-msql-backend.herokuapp.com/stock`);
-  const data = await res.json();
-  res.status(200).json(data)
+  res.status(200).json({})
 }
 
 export default handler;

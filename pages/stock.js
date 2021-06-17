@@ -1,24 +1,23 @@
 import Head from 'next/head';
-import styles from '../styles/Stock.module.css';
-import { NavBar, Menu, Table } from '../components';
+import { NavBar, Menu, StockTable } from '../components';
+import { server, company } from '../config';
 
 const Stock = ({ data }) => {
-  const company = "Satvik Solutions";
   return (
-    <div className={styles.container}>
-        <Head><title>{`${company}-Stock`}</title></Head>
+    <div>
+        <Head><title>{`${company.name}-Stock`}</title></Head>
         <NavBar />
         <div className='flex'>
             <Menu />
-            <Table stock={data}/>
+            <StockTable stock={data}/>
         </div>
     </div>
   )
 }
 
 export async function getServerSideProps() {
-
-    const res = await fetch(`https://nodejs-msql-backend.herokuapp.com/stock`);
+    const url = `${server}stock`;
+    const res = await fetch(url);
     const data = await res.json();
 
     return { props: { data } }
