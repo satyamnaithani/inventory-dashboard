@@ -2,7 +2,7 @@ import { Table as BootstrapTable } from 'react-bootstrap';
 
 const Table = ({ data, rows}) => {
     return (
-        <BootstrapTable striped bordered hover>
+        <BootstrapTable bordered hover>
             <thead>
                 <tr>{rows.map((title, index) => <th key={index}>{title}</th>)}</tr>
             </thead>
@@ -15,7 +15,9 @@ const Table = ({ data, rows}) => {
 
 const Row = ({item}) => {
     let column = [];
-    Object.keys(item).forEach((key) => column.push(item[key]));
+    Object.keys(item).forEach((key) => {
+        if(key !== '_id') column.push(item[key]);
+    });
     return <tr>{column.map((cell, index) => <td key={index}>{cell}</td>)}</tr>;
 }
 

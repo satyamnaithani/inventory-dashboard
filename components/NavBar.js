@@ -1,11 +1,15 @@
 import { Navbar, Nav, NavDropdown } from 'react-bootstrap';
 import { company } from '../config';
 import { useState } from 'react';
-import { Dialog } from '../components';
+import { Dialog, PurchaseForm } from '../components';
+import Link from 'next/link';
 
 const NavBar = () => {
-	const [open, setOpen] = useState(false);
-	const handleClose = () => setOpen(false);
+	const [openPurchase, setOpenPurchase] = useState(false);
+	const [openItem, setOpenItem] = useState(false);
+	const [openCustomer, setOpenCustomer] = useState(false);
+	const [openVendor, setOpenVendor] = useState(false);
+
     return (
 		<>
         	<Navbar style={{ position: "sticky" }} bg="dark" variant="dark" fixed="top">
@@ -15,15 +19,18 @@ const NavBar = () => {
 						<Nav.Link href="#features">Features</Nav.Link>
 						<Nav.Link href="#pricing">Pricing</Nav.Link>
 					<NavDropdown title="Add">
-						<NavDropdown.Item onClick={() => setOpen(!open)}>Purchase</NavDropdown.Item>
-						<NavDropdown.Item>Sale</NavDropdown.Item>
+						<NavDropdown.Item onClick={() => setOpenPurchase(!openPurchase)}>Purchase</NavDropdown.Item>
+						<Link href={'/stock'}><a style={{textDecoration: 'none', color: 'black', textAlign: 'center', fontSize: 'inherit'}}>Sale</a></Link>
 						<NavDropdown.Divider />
-						<NavDropdown.Item>Vendor</NavDropdown.Item>
-						<NavDropdown.Item>Customer</NavDropdown.Item>
-						<NavDropdown.Item>Item</NavDropdown.Item>
+						<NavDropdown.Item onClick={() => setOpenVendor(!openVendor)}>Vendor</NavDropdown.Item>
+						<NavDropdown.Item onClick={() => setOpenCustomer(!openCustomer)}>Customer</NavDropdown.Item>
+						<NavDropdown.Item onClick={() => setOpenItem(!openItem)}>Item</NavDropdown.Item>
 					</NavDropdown>
 				</Nav>
-				<Dialog show={open} handleClose={handleClose} />
+				<Dialog title={'Purchase Bill Entry'} show={openPurchase} handleClose={() => setOpenPurchase(false)}><PurchaseForm /></Dialog>
+				<Dialog title={'Vendor Registration'} show={openVendor} handleClose={() => setOpenVendor(false)}>Vendor</Dialog>
+				<Dialog title={'Customer Registration'} show={openCustomer} handleClose={() => setOpenCustomer(false)}>Customer</Dialog>
+				<Dialog title={'Item Registration'} show={openItem} handleClose={() => setOpenItem(false)}>Item</Dialog>
   			</Navbar>
 		</>
     );
