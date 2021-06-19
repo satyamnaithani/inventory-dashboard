@@ -1,7 +1,8 @@
 import useSWR from "swr";
 
 const fetcher = url => fetch(url).then(res => res.json());
-const baseUrl = 'http://localhost:3008/';
+const dev = process.env.NODE_ENV !== 'production';
+const baseUrl = dev ? 'http://localhost:3008/' : 'https://nodejs-msql-backend.herokuapp.com/';
 
 export const useGetData = (path) => {
   if (!path) {
