@@ -27,7 +27,7 @@ const NavBar = () => {
 						<NavDropdown.Item onClick={() => setOpenItem(!openItem)}>Item</NavDropdown.Item>
 					</NavDropdown>
 				</Nav>
-				<Dialog title={'Purchase Bill Entry'} show={openPurchase} handleClose={() => setOpenPurchase(false)}><PurchaseForm /></Dialog>
+				<Dialog title={'Purchase Bill Entry'} size="xl" show={openPurchase} handleClose={() => setOpenPurchase(false)}><PurchaseForm /></Dialog>
 				<Dialog title={'Vendor Registration'} show={openVendor} handleClose={() => setOpenVendor(false)}>Vendor</Dialog>
 				<Dialog title={'Customer Registration'} show={openCustomer} handleClose={() => setOpenCustomer(false)}>Customer</Dialog>
 				<Dialog title={'Item Registration'} show={openItem} handleClose={() => setOpenItem(false)}>Item</Dialog>
