@@ -1,7 +1,7 @@
 import { Form, Col, Button, Modal } from 'react-bootstrap';
 import { useState, useRef } from 'react';
 import { Table } from '../components';
-import { useGetData, usePostData } from '../config/fetchApi';
+import { useGetData } from '../config/fetchApi';
 
 const PurchaseForm = () => {
     const [vendorName, setVendorName] = useState();

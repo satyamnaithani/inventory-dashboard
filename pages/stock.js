@@ -5,7 +5,7 @@ import { useGetData } from '../config/fetchApi';
 
 const Stock = () => {
   const { data, error } = useGetData("stock");
-  if(error) return alert(error);
+  if(error) return console.log(error);
   return (
     <div>
         <Head><title>{`${company.name}-Stock`}</title></Head>

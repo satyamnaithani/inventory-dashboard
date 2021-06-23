@@ -1,27 +1,22 @@
 import Head from 'next/head';
 import { NavBar, Menu, Table } from '../components';
 import { server, company } from '../config';
+import { useGetData } from '../config/fetchApi';
 
-const Vendors = ({ data }) => {
+const Vendors = () => {
     const rows = ['Code','Name', 'Address', 'GST', 'DL', 'Contact', 'Person' ];
+    const { data: fetchedVendors, error: vendorFetchError } = useGetData("vendors");
+    if(vendorFetchError) console.error(vendorFetchError);
     return (
         <div>
             <Head><title>{`${company.name}-Vendors`}</title></Head>
             <NavBar />
             <div className='flex'>
                 <Menu />
-                <Table data={data} rows={rows}/>
+                {fetchedVendors !== undefined ? <Table data={fetchedVendors} rows={rows}/> : 'Loading...'}
             </div>
         </div>
     );
-}
-
-export async function getServerSideProps() {
-    const url = `${server}vendors`;
-    const res = await fetch(url);
-    const data = await res.json();
-
-    return { props: { data } }
 }
 
 export default Vendors;

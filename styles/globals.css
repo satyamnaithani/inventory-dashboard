@@ -18,3 +18,10 @@ a {
 	display: flex;
 	flex-direction: row;
 }
+.menu_item {
+	display: block;
+	margin: 0;
+}
+.menu_item:hover {
+	background-color: rgba(161, 136, 138, 0.251)
+}

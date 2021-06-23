@@ -12,15 +12,12 @@ const NavBar = () => {
 
     return (
 		<>
-        	<Navbar style={{ position: "sticky" }} bg="dark" variant="dark" fixed="top">
-				<Navbar.Brand href="#home">{company.name}</Navbar.Brand>
-				<Nav className="mr-auto">
-					<Nav.Link href="#home">Home</Nav.Link>
-						<Nav.Link href="#features">Features</Nav.Link>
-						<Nav.Link href="#pricing">Pricing</Nav.Link>
+        	<Navbar style={{ position: "sticky", fontSize: '18px' }} bg="dark" variant="dark" fixed="top">
+				<Navbar.Brand className="mr-5" href="#">{company.name}</Navbar.Brand>
+				<Nav className="ml-5">
 					<NavDropdown title="Add">
 						<NavDropdown.Item onClick={() => setOpenPurchase(!openPurchase)}>Purchase</NavDropdown.Item>
-						<Link href={'/stock'}><a style={{textDecoration: 'none', color: 'black', textAlign: 'center', fontSize: 'inherit'}}>Sale</a></Link>
+						<Link href={'/stock'}><a style={{textDecoration: 'none', color: '#212529', width: '100%', display: 'block',textAlign: 'inherit', fontSize: 'inherit', padding: '.25rem 1.5rem'}}>Sale</a></Link>
 						<NavDropdown.Divider />
 						<NavDropdown.Item onClick={() => setOpenVendor(!openVendor)}>Vendor</NavDropdown.Item>
 						<NavDropdown.Item onClick={() => setOpenCustomer(!openCustomer)}>Customer</NavDropdown.Item>
