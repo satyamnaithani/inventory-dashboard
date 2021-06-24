@@ -53,7 +53,7 @@ const PurchaseForm = () => {
     }
     const removeItem = _id => {
         let arr = [...itemArray.current];
-        const updatedItems = arr.filter((item) => item._id !== _id);
+        const updatedItems = arr.filter((item_obj) => item_obj._id !== _id);
         if(updatedItems.length === 0) setButtonDisabled(true);
         setItemInfo([...updatedItems]);
     }

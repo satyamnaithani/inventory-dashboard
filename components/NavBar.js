@@ -1,7 +1,7 @@
 import { Navbar, Nav, NavDropdown } from 'react-bootstrap';
 import { company } from '../config';
 import { useState } from 'react';
-import { Dialog, PurchaseForm } from '../components';
+import { Dialog, PurchaseForm, ItemForm, VendorForm, CustomerForm } from '../components';
 import Link from 'next/link';
 
 const NavBar = () => {
@@ -25,9 +25,9 @@ const NavBar = () => {
 					</NavDropdown>
 				</Nav>
 				<Dialog title={'Purchase Bill Entry'} size="xl" show={openPurchase} handleClose={() => setOpenPurchase(false)}><PurchaseForm /></Dialog>
-				<Dialog title={'Vendor Registration'} show={openVendor} handleClose={() => setOpenVendor(false)}>Vendor</Dialog>
-				<Dialog title={'Customer Registration'} show={openCustomer} handleClose={() => setOpenCustomer(false)}>Customer</Dialog>
-				<Dialog title={'Item Registration'} show={openItem} handleClose={() => setOpenItem(false)}>Item</Dialog>
+				<Dialog title={'Vendor Registration'} show={openVendor} handleClose={() => setOpenVendor(false)}><VendorForm /></Dialog>
+				<Dialog title={'Customer Registration'} show={openCustomer} handleClose={() => setOpenCustomer(false)}><CustomerForm/></Dialog>
+				<Dialog title={'Item Registration'} show={openItem} handleClose={() => setOpenItem(false)}><ItemForm/></Dialog>
   			</Navbar>
 		</>
     );
