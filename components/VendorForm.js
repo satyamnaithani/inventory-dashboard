@@ -1,5 +1,7 @@
 import { Form, Col, Button } from 'react-bootstrap';
 import { useState } from 'react';
+import { postData } from '../config/fetchApi';
+import { Spinner } from '../components';
 
 const VendorForm = () => {
     const [name, setName] = useState("");
@@ -11,9 +13,11 @@ const VendorForm = () => {
     const [dl, setDl] = useState("");
     const [contact, setContact] = useState("");
     const [person, setPerson] = useState("");
+    const [loading, setLoading] = useState(false);
 
-    const handleVendorSubmitForm = (e) => {
+    const handleVendorSubmitForm = async(e) => {
         e.preventDefault();
+        setLoading(true);
         const vendor = {
             name: name,
             address: address,
@@ -26,6 +30,18 @@ const VendorForm = () => {
             person: person
         }
         console.log(vendor);
+        const result = await postData("vendors", vendor);
+        if(result.msg === 'created') {
+            setLoading(false);
+            clearForm();
+            alert("Vendor Added Successfully!");
+        } else {
+            setLoading(false);
+            console.log(result);
+        }
+    }
+    const clearForm = () => {
+        setName("");setAddress("");setCity("");setState("");setZip("");setGstin("");setDl("");setContact("");setPerson("");
     }
     return (
         <Form onSubmit={handleVendorSubmitForm}>
@@ -80,7 +96,7 @@ const VendorForm = () => {
                 </Col>
             </Form.Row>
             <br/>
-            <Button type="submit" block variant="success">Add</Button>
+            <Button type="submit" block variant="success">{loading ? <Spinner /> : 'Add'}</Button>
         </Form>
     );
 }

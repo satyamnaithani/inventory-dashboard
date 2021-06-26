@@ -1,18 +1,22 @@
 import { Form, Col, Button } from 'react-bootstrap';
 import { useState } from 'react';
-
+import { postData } from '../config/fetchApi';
+import { Spinner } from '../components';
 
 const ItemForm = () => {
-    const categoryArr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-    const gstArr = [1, 2, 3, 4, 5, 6, 7, 8];
-    const uomArr = [1, 2, 3, 4, 5, 6];
+    const categoryArr = ['Medical Equipment', 'Spares', 'Consumables', 'Service', 'Office Durables', 'Transportation', 'Office Consumables'];
+    const gstArr = [0, 5, 12, 18, 28];
+    const uomArr = ['No.', 'L', 'Piece', 'Kg'];
     const [category, setCategory] = useState("");
     const [name, setName] = useState("");
     const [hsn, setHsn] = useState("");
     const [gst, setGst] = useState("");
     const [uom, setUom] = useState("");
     const [mfgName, setMfgName] = useState("");
-    const handleItemFormSubmit = (e) => {
+    const [loading, setLoading] = useState(false);
+
+    const handleItemFormSubmit = async(e) => {
+        setLoading(true);
         e.preventDefault();
         const item = {
             category: category,
@@ -22,7 +26,18 @@ const ItemForm = () => {
             uom: uom,
             mfg_name: mfgName
         }
-        console.log(item);
+        const result = await postData("items", item);
+        if(result.msg === 'created') {
+            setLoading(false);
+            clearForm();
+            alert("Item Added Successfully!");
+        } else {
+            setLoading(false);
+            console.log(result);
+        }
+    }
+    const clearForm = () => {
+        setCategory("");setName("");setHsn("");setUom("");setMfgName("");
     }
     return (
         <Form onSubmit={handleItemFormSubmit}>
@@ -76,14 +91,13 @@ const ItemForm = () => {
             <Form.Row>
                 <Col xs={12}>
                     <Form.Label>Manufacturer Company</Form.Label>
-                    <Form.Control required value={mfgName} onChange={(e) => setMfgName(e.target.value)} placeholder="Manufacturer Company Name" />
+                    <Form.Control value={mfgName} onChange={(e) => setMfgName(e.target.value)} placeholder="Manufacturer Company Name" />
                 </Col>
             </Form.Row>
             <br/>
-            <Button type="submit" block variant="success">Add</Button>
+            <Button type="submit" block variant="success">{loading ? <Spinner /> : 'Add'}</Button>
         </Form>
     );
 }
-
 
 export default ItemForm;

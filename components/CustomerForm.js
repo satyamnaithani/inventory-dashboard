@@ -1,5 +1,7 @@
 import { Form, Col, Button } from 'react-bootstrap';
 import { useState } from 'react';
+import { postData } from '../config/fetchApi';
+import { Spinner } from '../components';
 
 const CustomerForm = () => {
     const [name, setName] = useState("");
@@ -11,9 +13,11 @@ const CustomerForm = () => {
     const [dl, setDl] = useState("");
     const [contact, setContact] = useState("");
     const [person, setPerson] = useState("");
+    const [loading, setLoading] = useState(false);
 
-    const handleCustomerSubmitForm = (e) => {
+    const handleCustomerSubmitForm = async(e) => {
         e.preventDefault();
+        setLoading(true);
         const customer = {
             name: name,
             address: address,
@@ -26,6 +30,15 @@ const CustomerForm = () => {
             person: person
         }
         console.log(customer);
+        const result = await postData("customers", customer);
+        if(result.msg === 'created') {
+            setLoading(false);
+            clearForm();
+            alert("Customer Added Successfully!");
+        } else {
+            setLoading(false);
+            console.log(result);
+        }
     }
     return (
         <Form onSubmit={handleCustomerSubmitForm}>
@@ -80,7 +93,7 @@ const CustomerForm = () => {
                 </Col>
             </Form.Row>
             <br/>
-            <Button type="submit" block variant="success">Add</Button>
+            <Button type="submit" block variant="success">{loading ? <Spinner /> : 'Add'}</Button>
         </Form>
     );
 }

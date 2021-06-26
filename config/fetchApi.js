@@ -1,27 +1,25 @@
-import useSWR from "swr";
-const dev = process.env.NODE_ENV !== 'production';
-const baseUrl = dev ? 'http://localhost:3008/' : 'https://nodejs-msql-backend.herokuapp.com/';
+import useSWR, { mutate } from "swr";
+import axios from 'axios';
 
 const getFetcher = url => fetch(url).then(res => res.json());
-const postFetcher = params => url => fetch(url, { method: 'POST', body: params }).then(res => res.json());
 
 export const useGetData = (path) => {
   if (!path) {
-    throw new Error("Path is required")
+    throw new Error("Path is required");
   }
 
-  const url = baseUrl + path
+  const url = `${process.env.SERVER_URL}${path}`;
 
-  const { data, error } = useSWR(url, getFetcher)
+  const { data, error } = useSWR(url, getFetcher);
 
-  return { data, error }
+  return { data, error };
 }
 
-export const usePostData = (path, formData) => {
+export const posData = async(path, formData) => {
   if (!path) throw new Error("Path is required");
 
-  const url = baseUrl + path
-  const { data, error } = useSWR(url, postFetcher(formData));
-
-  return { data, error }
+  const url = `${process.env.SERVER_URL}${path}`;
+  const data = await axios({url: url, data: formData, method: 'POST'});
+  if(data.status === 201 ) return { msg: 'created'};
+  else return data.error
 }

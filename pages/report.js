@@ -1,11 +1,10 @@
 import Head from 'next/head';
 import { NavBar, Menu } from '../components';
-import { server, company } from '../config';
 
 const Report = () => {
     return (
         <div>
-            <Head><title>{`${company.name}-Report`}</title></Head>
+            <Head><title>{`${process.env.COMPANY_NAME}-Report`}</title></Head>
             <NavBar />
             <div className='flex'>
                 <Menu />

@@ -7,3 +7,4 @@ export { default as PurchaseForm } from './PurchaseForm';
 export { default as ItemForm } from './ItemForm';
 export { default as VendorForm } from './VendorForm';
 export { default as CustomerForm } from './CustomerForm';
+export { default as Spinner } from './Spinner';

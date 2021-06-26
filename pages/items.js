@@ -9,7 +9,7 @@ const Items = () => {
     if(itemFetchError) console.error(itemFetchError);
     return (
         <div>
-            <Head><title>{`${company.name}-Items`}</title></Head>
+            <Head><title>{`${process.env.COMPANY_NAME}-Items`}</title></Head>
             <NavBar />
             <div className='flex'>
                 <Menu />

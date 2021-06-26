@@ -1,16 +1,10 @@
-import { Nav, DropdownButton, Dropdown, ButtonGroup } from 'react-bootstrap';
+import { Nav } from 'react-bootstrap';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 
-const ReportDropDown = () => {
-    return (
-        <span>Report</span>
-    );
-}
-
 let routes = [
     { link: '/', value: 'Home' },
-    { link: '/report', value: <ReportDropDown /> },
+    { link: '/report', value: 'Report' },
     { link: '/stock', value: 'Stock' },
     { link: '/purchase', value: 'Purchase' },
     { link: '/sales', value: 'Sales' },
@@ -27,7 +21,7 @@ const Menu = () => {
                 {routes.map((route, index) => (
                     <p key={index} className="menu_item" style={router.route === route.link ? {backgroundColor: '#8080ff'} : {}}>
                         <Link href={route.link}><a style={{textDecoration: 'none', display: 'block'}}>
-                            <span style={{ color: '#fff', textDecoration: 'none', padding: '10px', display: 'block'}}>{route.value}</span>
+                            <span style={styles.route_text}>{route.value}</span>
                         </a></Link>
                     </p>
                 ))}
@@ -42,6 +36,12 @@ const styles = {
         minHeight: '100vh',
         minWidth: '10vw',
         backgroundColor: '#343a40'
+    }, 
+    route_text: { 
+        color: '#fff', 
+        textDecoration: 'none', 
+        padding: '10px', 
+        display: 'block'
     }
 };
 export default Menu;

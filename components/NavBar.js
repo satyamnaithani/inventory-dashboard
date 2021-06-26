@@ -1,5 +1,4 @@
 import { Navbar, Nav, NavDropdown } from 'react-bootstrap';
-import { company } from '../config';
 import { useState } from 'react';
 import { Dialog, PurchaseForm, ItemForm, VendorForm, CustomerForm } from '../components';
 import Link from 'next/link';
@@ -13,7 +12,7 @@ const NavBar = () => {
     return (
 		<>
         	<Navbar style={{ position: "sticky", fontSize: '18px' }} bg="dark" variant="dark" fixed="top">
-				<Navbar.Brand className="mr-5" href="#">{company.name}</Navbar.Brand>
+				<Navbar.Brand className="mr-5" href="#">{process.env.COMPANY_NAME}</Navbar.Brand>
 				<Nav className="ml-5">
 					<NavDropdown title="Add">
 						<NavDropdown.Item onClick={() => setOpenPurchase(!openPurchase)}>Purchase</NavDropdown.Item>

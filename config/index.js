@@ -1,3 +1,4 @@
+export { default as fetchApi } from './fetchApi';
 const dev = process.env.NODE_ENV !== 'production';
 //export const server = 'https://nodejs-msql-backend.herokuapp.com/';
 export const company = {

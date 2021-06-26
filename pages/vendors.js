@@ -1,6 +1,5 @@
 import Head from 'next/head';
 import { NavBar, Menu, Table } from '../components';
-import { server, company } from '../config';
 import { useGetData } from '../config/fetchApi';
 
 const Vendors = () => {
@@ -9,7 +8,7 @@ const Vendors = () => {
     if(vendorFetchError) console.error(vendorFetchError);
     return (
         <div>
-            <Head><title>{`${company.name}-Vendors`}</title></Head>
+            <Head><title>{`${process.env.COMPANY_NAME}-Vendors`}</title></Head>
             <NavBar />
             <div className='flex'>
                 <Menu />
