@@ -17,7 +17,8 @@ const handler = async(req, res) => {
                 console.log(req.body);
                 const response = await axios.post(`${url}/create-pdf`, JSON.parse(req.body));
                 const result = await axios.get(`${url}/fetch-pdf`, { responseType: "blob" });
-                res.sendFile(result);
+                console.log(result);
+                res.status(200).json(JSON.stringify(result));
             } catch(error) {
                 console.log(error)
                 res.status(error.response.status).json(error);

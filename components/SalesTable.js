@@ -50,13 +50,23 @@ const ItemList = ({list}) => {
     );
 }
 const handleDownloadPdf = (item) => {
-    let pdfData = {};
-    pdfData['method'] = 'POST';
-    pdfData['body'] = JSON.stringify(item);
-    fetch('/api/invoice', pdfData).then((result) => {
-        const pdfBlob = new Blob([result.data], { type: "application/pdf" });
+    let pdfData = item;
+    // let pdfData = {};
+    // pdfData['method'] = 'POST';
+    // pdfData['body'] = JSON.stringify(item);
+    // fetch('/api/invoice', pdfData).then((result) => {
+    //     console.log(result);
+    //     const pdfBlob = new Blob([result.data], { type: "application/pdf" });
+    //     saveAs(pdfBlob, pdfData.invoice_no + ".pdf");
+    // })
+    
+    axios.post(`${process.env.SERVER_URL}invoice/create-pdf`, pdfData)
+    .then(() => axios.get(`${process.env.SERVER_URL}invoice/fetch-pdf`, { responseType: "blob" }))
+    .then((res) => {
+        const pdfBlob = new Blob([res.data], { type: "application/pdf" });
         saveAs(pdfBlob, pdfData.invoice_no + ".pdf");
     })
+    .catch((err) => console.log(err));
 };
 const SaleDetails = ({ item }) => {
     const {invoice_no, invoice_date, customer_name, challan_no, challan_date, order_no, order_date, ewb_no, ewb_date, dispatch_doc_no, dispatch_doc_date, dispatch_through, terms_of_delivery, remark } = item;
