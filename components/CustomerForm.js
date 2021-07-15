@@ -1,6 +1,5 @@
 import { Form, Col, Button } from 'react-bootstrap';
 import { useState } from 'react';
-import { postData } from '../config/fetchApi';
 import { Spinner } from '../components';
 
 const CustomerForm = () => {
@@ -18,27 +17,33 @@ const CustomerForm = () => {
     const handleCustomerSubmitForm = async(e) => {
         e.preventDefault();
         setLoading(true);
-        const customer = {
-            name: name,
-            address: address,
-            city: city,
-            state: state,
-            zip: zip,
-            gst: gstin,
-            dl: dl,
-            contact: contact,
-            person: person
+        const reqObj = {
+            method: 'POST',
+            headers: {'Content-Type':'application/json'},
+            body: JSON.stringify({
+                name: name,
+                address: address,
+                city: city,
+                state: state,
+                zip: zip,
+                gst: gstin,
+                dl: dl,
+                contact: contact,
+                person: person
+            })
         }
-        console.log(customer);
-        const result = await postData("customers", customer);
-        if(result.msg === 'created') {
+        const response = await fetch('/api/customers', reqObj);
+        if(response.status === 201) {
             setLoading(false);
             clearForm();
             alert("Customer Added Successfully!");
         } else {
             setLoading(false);
-            console.log(result);
+            console.log(response);
         }
+    }
+    const clearForm = () => {
+        setName("");setAddress("");setCity("");setState("");setZip("");setGstin("");setDl("");setContact("");setPerson("");
     }
     return (
         <Form onSubmit={handleCustomerSubmitForm}>

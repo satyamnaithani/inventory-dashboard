@@ -1,6 +1,5 @@
 import { Form, Col, Button } from 'react-bootstrap';
 import { useState } from 'react';
-import { postData } from '../config/fetchApi';
 import { Spinner } from '../components';
 
 const VendorForm = () => {
@@ -18,26 +17,29 @@ const VendorForm = () => {
     const handleVendorSubmitForm = async(e) => {
         e.preventDefault();
         setLoading(true);
-        const vendor = {
-            name: name,
-            address: address,
-            city: city,
-            state: state,
-            zip: zip,
-            gst: gstin,
-            dl: dl,
-            contact: contact,
-            person: person
+        const reqObj = {
+            method: 'POST',
+            headers: {'Content-Type':'application/json'},
+            body: JSON.stringify({
+                name: name,
+                address: address,
+                city: city,
+                state: state,
+                zip: zip,
+                gst: gstin,
+                dl: dl,
+                contact: contact,
+                person: person
+            })
         }
-        console.log(vendor);
-        const result = await postData("vendors", vendor);
-        if(result.msg === 'created') {
+        const response = await fetch('/api/vendors', reqObj);
+        if(response.status === 201) {
             setLoading(false);
             clearForm();
             alert("Vendor Added Successfully!");
         } else {
             setLoading(false);
-            console.log(result);
+            console.log(response);
         }
     }
     const clearForm = () => {

@@ -1,10 +1,11 @@
 import { Form, Col, Button, Modal } from 'react-bootstrap';
 import { useState, useRef } from 'react';
-import { Table } from '../components';
-import { useGetData } from '../config/fetchApi';
+import { Table, Spinner } from '../components';
+import useSWR from 'swr';
+const fetcher = url => fetch(url).then(res => res.json());
 
 const PurchaseForm = () => {
-    const [vendorName, setVendorName] = useState();
+    const [vendorName, setVendorName] = useState("");
     const [billNo, setBillNo] = useState("");
     const [billDate, setBillDate] = useState("");
     const [receiveDate, setReceiveDate] = useState("");
@@ -19,12 +20,13 @@ const PurchaseForm = () => {
 
     const [itemInfo, setItemInfo] = useState([]);
     const [itemTableRows] = useState(['Item', 'lot', 'Exp', 'rate', 'GST', 'quantity', 'Remove']);
+    const [loading, setLoading] = useState(false);
 
     const itemArray = useRef();
     itemArray.current = itemInfo;
 
-    const { data: fetchedItems, error: itemFetchError } = useGetData("items");
-    const { data: fetchedVendors, error: vendorFetchError } = useGetData("vendors");
+    const { data: fetchedItems, error: itemFetchError } = useSWR('/api/items', fetcher);
+    const { data: fetchedVendors, error: vendorFetchError } = useSWR('/api/vendors', fetcher);
     let items = [], vendors = [];
 
     if(fetchedItems) items = [...fetchedItems];
@@ -33,17 +35,19 @@ const PurchaseForm = () => {
     if(vendorFetchError) console.log('Vendor Fetch Error');
     const addItem = (e) => {
         e.preventDefault();
-        const _id = Math.floor(Math.random() * 999999);
-        const gst = items.filter((obj) => obj.name === item)[0].gst;
+        const key = Math.floor(Math.random() * 999999);
+        const itemObj = items.filter((obj) => obj.name === item)[0];
+
         let obj = {
-            _id: _id,
+            key: key,
+            item_id: itemObj._id,
             item: item,
-            lot: lot,
+            lot_no: lot,
             exp: exp,
             rate: rate,
-            gst: gst,
+            gst: itemObj.gst,
             quantity: quantity,
-            remove: <div style={{cursor: 'pointer', color: 'red'}} onClick={() => removeItem(_id)}>X</div>
+            remove: <div style={{cursor: 'pointer', color: 'red'}} onClick={() => removeItem(key)}>X</div>
         };
         let arr = itemInfo;
         arr.push(obj);
@@ -51,30 +55,42 @@ const PurchaseForm = () => {
         setItemInfo(arr);
         clearItemForm();
     }
-    const removeItem = _id => {
+    const removeItem = key => {
         let arr = [...itemArray.current];
-        const updatedItems = arr.filter((item_obj) => item_obj._id !== _id);
+        const updatedItems = arr.filter((item_obj) => item_obj.key !== key);
         if(updatedItems.length === 0) setButtonDisabled(true);
         setItemInfo([...updatedItems]);
     }
     const clearItemForm = () => {
-        setLot("");
-        setExp("");
-        setItem("");
-        setQuantity("");
-        setRate("");
+        setLot("");setExp("");setItem("");setQuantity("");setRate("");
     }
-    const handlePurchaseForm = e => {
+    const clearPurchaseForm = () => {
+        setVendorName("");setBillNo("");setBillDate("");setReceiveDate("");setItemInfo([]);
+    }
+    const handlePurchaseForm = async(e) => {
         e.preventDefault();
+        setLoading(true);
         const {_id: vendor_id} = vendors.filter((vendor) => vendor.name === vendorName)[0];
-        let purchase = {
-            vendor_name: vendor_id,
-            bill_no: billNo,
-            bill_date: billDate,
-            receive_date: receiveDate,
-            items: itemInfo
+        const reqObj = {
+            method: 'POST',
+            headers: {'Content-Type':'application/json'},
+            body: JSON.stringify({
+                vendor_id: vendor_id,
+                bill_no: billNo,
+                bill_date: billDate,
+                receive_date: receiveDate,
+                items: itemInfo
+            })
         }
-        console.log(purchase);
+        const response = await fetch('/api/purchase', reqObj);
+        if(response.status === 201) {
+            setLoading(false);
+            clearPurchaseForm();
+            alert("Purchase Added Successfully!");
+        } else {
+            setLoading(false);
+            console.log(response);
+        }
     }
     return (
         <>
@@ -108,7 +124,7 @@ const PurchaseForm = () => {
                 <Button style={{float: 'right', margin: '5px'}} size='sm' onClick={() => setOpenItemForm(!openItemForm)} variant="success">+ Add Item</Button>
                 {itemInfo.length === 0 ? <SelectItems />: <Table rows={itemTableRows} data={itemInfo}/>}
                 <Total itemInfo={itemInfo}/>
-                <Button style={{float: 'right', margin: '25px', width: '300px'}} disabled={buttonDisabled} variant="success" type="submit">Confirm</Button>
+                <Button style={{float: 'right', margin: '25px', width: '300px'}} disabled={buttonDisabled} variant="success" type="submit">{loading ? <Spinner /> : 'Add'}</Button>
             </Form>
             <Dialog show={openItemForm} handleClose={() => setOpenItemForm(false)}>
                 <Form onSubmit={addItem}>

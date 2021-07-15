@@ -1,10 +1,11 @@
 import Head from 'next/head';
 import { NavBar, Menu, StockTable } from '../components';
-import { useGetData } from '../config/fetchApi';
+import useSWR from 'swr';
+const fetcher = url => fetch(url).then(res => res.json());
 
 const Stock = () => {
-  const { data, error } = useGetData("stock");
-  if(error) return console.log(error);
+  const { data, error } = useSWR('/api/stock', fetcher);
+  if(error) console.log(error);
   return (
     <div>
         <Head><title>{`${process.env.COMPANY_NAME}-Stock`}</title></Head>

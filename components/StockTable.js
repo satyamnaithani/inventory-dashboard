@@ -1,12 +1,15 @@
-import { Table, Form, Button, InputGroup, FormControl, Col } from 'react-bootstrap';
+import { Table, Form, Button, Col } from 'react-bootstrap';
 import { useState } from 'react';
 import styles from '../styles/Stock.module.css';
-import { Dialog } from '../components';
-import { useGetData } from '../config/fetchApi';
+import { Dialog, Spinner } from '../components';
+import Router from 'next/router';
+import useSWR from 'swr';
+const fetcher = url => fetch(url).then(res => res.json());
 
 const StockTable = ({ stock }) => {
     const [open, setOpen] = useState(false);
     const [itemArray, setItemArray] = useState([]);
+    const [loading, setLoading] = useState(false);
 
     //Sales Form Details
     const dispatchThroughArr = ['Surface Transport', 'By Hand', 'By Air', 'By Train'];
@@ -40,22 +43,19 @@ const StockTable = ({ stock }) => {
             setItemArray(tempArr);
         }
     }
-    const handleOpenSalesForm = () => {
-        setOpen(!open);
-    }
     let customersList = [];
     const heading = ['Add','Item', 'Purchase', 'Lot', 'Exp', 'Rate', 'Quantity'];
-    const { data: fetchedCustomers, error: customerFetchError } = useGetData("customers");
+    const { data: fetchedCustomers, error: customerFetchError } = useSWR('/api/customers', fetcher);
     if(customerFetchError) console.log(customerFetchError);
     if(fetchedCustomers) customersList = [...fetchedCustomers];
     const handleCustomerChange = (e) => {
         setCustomer(e.target.value);
         let customer_details = customersList.filter((customer_obj) => customer_obj.name === e.target.value)[0];
         setDestination(customer_details.address);
-        
     }
-    const handleSalesFormSubmit = (e) => {
+    const handleSalesFormSubmit = async(e) => {
         e.preventDefault();
+        setLoading(true);
         const customer_details = customersList.filter((val) => val.name === customer)[0];
         let items = [];
         itemArray.forEach((item_obj) => {
@@ -66,23 +66,56 @@ const StockTable = ({ stock }) => {
             }
             items.push(item);
         });
-        let obj = {
-            "customer_id": customer_details._id,
-            "invoice_date": invoiceDate, 
-            "challan_no": challanNo, 
-            "challan_date": challanDate, 
-            "order_no": orderNo, 
-            "order_date": orderDate, 
-            "ewb_no": ewbNo, 
-            "ewb_date": ewbDate, 
-            "dispatch_doc_no": dispatchDocNo, 
-            "dispatch_doc_date": dispatchDocDate, 
-            "dispatch_through": dispatchThrough, 
-            "terms_of_delivery": termsOfDelivery, 
-            "remark": remark,
-            "sale_items": items
+        const reqObj = {
+            method: 'POST',
+            headers: {'Content-Type':'application/json'},
+            body: JSON.stringify({
+                "customer_id": customer_details._id,
+                "invoice_date": invoiceDate, 
+                "challan_no": challanNo, 
+                "challan_date": challanDate, 
+                "order_no": orderNo, 
+                "order_date": orderDate, 
+                "ewb_no": ewbNo, 
+                "ewb_date": ewbDate, 
+                "dispatch_doc_no": dispatchDocNo, 
+                "dispatch_doc_date": dispatchDocDate, 
+                "dispatch_through": dispatchThrough, 
+                "terms_of_delivery": termsOfDelivery, 
+                "remark": remark,
+                "sale_items": items
+            })
         }
-        console.log(obj);
+        const response = await fetch('/api/sales', reqObj);
+        if(response.status === 201) {
+            setLoading(false);
+            clearSaleForm();
+            updateStock();
+            setOpen(false);
+            alert("Sale Added Successfully!");
+        } else {
+            setLoading(false);
+            console.log(response);
+        }
+    }
+    const clearSaleForm = () => {
+        setItemArray([]);
+        setCustomer("");
+        setInvoiceDate("");
+        setChallanNo("");
+        setChallanDate("");
+        setOrderNo("");
+        setOrderDate("");
+        setEwbNo("");
+        setEwbDate("");
+        setDispatchDocNo("");
+        setDispatchDocDate("");
+        setDispatchThrough(dispatchThroughArr[0]);
+        setTermsOfDelivery(termsOfDeliveryArr[0]);setRemark("");
+        setDestination("");
+    }
+    const updateStock = () => {
+        Router.reload(window.location.pathname);
     }
     return (
         <>
@@ -94,7 +127,7 @@ const StockTable = ({ stock }) => {
                     {stock.map((item, index) => <StockRow key={index} item={item} handleChecked={handleChecked}/>)}
                 </tbody>
             </Table>
-            <Button style={{position: 'fixed', bottom: '10px', left: '50vw'}} onClick={handleOpenSalesForm}>+</Button>
+            <Button style={{position: 'fixed', bottom: '10px', left: '50vw'}} onClick={() => setOpen(true)}>+</Button>
             <Dialog title={'Add Further Sales Details'} show={open} handleClose={() => setOpen(!open)} size={'xl'}>
                 <div>
                     <Form onSubmit={handleSalesFormSubmit}>
@@ -116,38 +149,38 @@ const StockTable = ({ stock }) => {
                         <Form.Row>
                             <Col xs={3}>
                                 <Form.Label>ChallanNo</Form.Label>
-                                <Form.Control required value={challanNo} onChange={(e) => setChallanNo(e.target.value)} placeholder="Challan No" />
+                                <Form.Control value={challanNo} onChange={(e) => setChallanNo(e.target.value)} placeholder="Challan No" />
                             </Col>
                             <Col xs={3}>
                                 <Form.Label>Challan Date</Form.Label>
-                                <Form.Control type="date" required value={challanDate} onChange={(e) => setChallanDate(e.target.value)} placeholder="Challan Date" />
+                                <Form.Control type="date" value={challanDate} onChange={(e) => setChallanDate(e.target.value)} placeholder="Challan Date" />
                             </Col>
                             <Col xs={3}>
                                 <Form.Label>OrderNo</Form.Label>
-                                <Form.Control required value={orderNo} onChange={(e) => setOrderNo(e.target.value)} placeholder="Order No" />
+                                <Form.Control value={orderNo} onChange={(e) => setOrderNo(e.target.value)} placeholder="Order No" />
                             </Col>
                             <Col xs={3}>
                                 <Form.Label>Order Date</Form.Label>
-                                <Form.Control type="date" required value={orderDate} onChange={(e) => setOrderDate(e.target.value)} placeholder="Order Date" />
+                                <Form.Control type="date" value={orderDate} onChange={(e) => setOrderDate(e.target.value)} placeholder="Order Date" />
                             </Col>
                         </Form.Row>
                         <br/>
                         <Form.Row>
                             <Col xs={3}>
                                 <Form.Label>EWB No</Form.Label>
-                                <Form.Control required value={ewbNo} onChange={(e) => setEwbNo(e.target.value)} placeholder="EWB No" />
+                                <Form.Control value={ewbNo} onChange={(e) => setEwbNo(e.target.value)} placeholder="EWB No" />
                             </Col>
                             <Col xs={3}>
                                 <Form.Label>EWB Date</Form.Label>
-                                <Form.Control type="date" required value={ewbDate} onChange={(e) => setEwbDate(e.target.value)} placeholder="EWB Date" />
+                                <Form.Control type="date" value={ewbDate} onChange={(e) => setEwbDate(e.target.value)} placeholder="EWB Date" />
                             </Col>
                             <Col xs={3}>
                                 <Form.Label>OrderNo</Form.Label>
-                                <Form.Control required value={dispatchDocNo} onChange={(e) => setDispatchDocNo(e.target.value)} placeholder="Dispatch Doc No" />
+                                <Form.Control value={dispatchDocNo} onChange={(e) => setDispatchDocNo(e.target.value)} placeholder="Dispatch Doc No" />
                             </Col>
                             <Col xs={3}>
                                 <Form.Label>Dispatch Doc Date</Form.Label>
-                                <Form.Control type="date" required value={dispatchDocDate} onChange={(e) => setDispatchDocDate(e.target.value)} placeholder="Dispatch Date" />
+                                <Form.Control type="date" value={dispatchDocDate} onChange={(e) => setDispatchDocDate(e.target.value)} placeholder="Dispatch Date" />
                             </Col>
                         </Form.Row>
                         <br/>
@@ -163,20 +196,20 @@ const StockTable = ({ stock }) => {
                                 </Form.Control>
                             </Col>
                             <Col xs={3}>
-                                <Form.Label>Dispatch Through</Form.Label>
+                                <Form.Label>Terms of Delivery</Form.Label>
                                     <Form.Control required value={termsOfDelivery} placeholder="Terms of Delivery" onChange={(e) => setTermsOfDelivery(e.target.value)} defaultValue={termsOfDeliveryArr[0]} as="select">
                                         {termsOfDeliveryArr.map((val, index) => <option key={index}>{val}</option>)}
                                     </Form.Control>
                             </Col>
                             <Col xs={3}>
                                 <Form.Label>Remark</Form.Label>
-                                <Form.Control type="text" required value={remark} onChange={(e) => setRemark(e.target.value)} placeholder="Remark" />
+                                <Form.Control type="text" value={remark} onChange={(e) => setRemark(e.target.value)} placeholder="Remark" />
                             </Col>
                         </Form.Row>
                         <br/>
                         <SalesItemTable data={itemArray}/>
                         <Total itemInfo={itemArray}/>
-                        <Button type="submit" variant="success" block>Confirm</Button>
+                        <Button type="submit" variant="success" block>{loading ? <Spinner /> : 'Confirm'}</Button>
                     </Form>
                 </div>
             </Dialog>
@@ -203,7 +236,7 @@ const StockRow = ({item, handleChecked}) => {
     const [open, setOpen] = useState();
     const [sellingRate, setSellingRate] = useState("");
     const [checkout, setCheckout] = useState("");
-    const { _id, item: item_name, vendor, lot_no, exp, quantity, initial_quantity, rate} = item;
+    const { item: item_name, vendor, lot_no, exp, quantity, initial_quantity, rate } = item;
     const handleCheck = (e) => {
         e.preventDefault();
         setChecked(!checked);
@@ -212,7 +245,7 @@ const StockRow = ({item, handleChecked}) => {
     }
     const handleRow = () => {
         if(checked) {
-            setChecked(!checked);
+            setChecked(false);
             handleChecked(item, 'remove');
         }
         else setOpen(!open);

@@ -1,18 +1,19 @@
 import Head from 'next/head';
 import { NavBar, Menu, Table } from '../components';
-import { useGetData } from '../config/fetchApi';
+import useSWR from 'swr';
+const fetcher = url => fetch(url).then(res => res.json());
 
 const Customers = () => {
     const rows = ['Code','Name', 'Address', 'GST', 'DL', 'Contact', 'Person' ];
-    const { data: fetchedCustomers, error: customerFetchError } = useGetData("customers");
-    if(customerFetchError) console.error(customerFetchError);
+    const { data, error } = useSWR('/api/customers', fetcher);
+    if(error) console.log(error);
     return (
         <div>
             <Head><title>{`${process.env.COMPANY_NAME}-Customers`}</title></Head>
             <NavBar />
             <div className='flex'>
                 <Menu />
-                {fetchedCustomers !== undefined ? <Table data={fetchedCustomers} rows={rows}/> : 'Loading...'}
+                {data !== undefined ? <Table data={data} rows={rows}/> : 'Loading...'}
             </div>
         </div>
     );

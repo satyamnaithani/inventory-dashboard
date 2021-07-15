@@ -1,6 +1,5 @@
 import { Form, Col, Button } from 'react-bootstrap';
 import { useState } from 'react';
-import { postData } from '../config/fetchApi';
 import { Spinner } from '../components';
 
 const ItemForm = () => {
@@ -18,22 +17,26 @@ const ItemForm = () => {
     const handleItemFormSubmit = async(e) => {
         setLoading(true);
         e.preventDefault();
-        const item = {
-            category: category,
-            name: name,
-            hsn: hsn,
-            gst: gst,
-            uom: uom,
-            mfg_name: mfgName
+        const reqObj = {
+            method: 'POST',
+            headers: {'Content-Type':'application/json'},
+            body: JSON.stringify({
+                category: category,
+                name: name,
+                hsn: hsn,
+                gst: gst,
+                uom: uom,
+                mfg_name: mfgName
+            })
         }
-        const result = await postData("items", item);
-        if(result.msg === 'created') {
+        const response = await fetch('/api/items', reqObj);
+        if(response.status === 201) {
             setLoading(false);
             clearForm();
             alert("Item Added Successfully!");
         } else {
             setLoading(false);
-            console.log(result);
+            console.log(response);
         }
     }
     const clearForm = () => {
